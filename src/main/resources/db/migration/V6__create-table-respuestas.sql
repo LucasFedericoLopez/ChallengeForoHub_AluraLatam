@@ -1,4 +1,4 @@
-create table usuarios (
+create table respuestas (
 id bigint not null auto_increment,
 mensaje varchar(500) not null,
 fecha_creacion datetime not null,

@@ -2,12 +2,17 @@ package com.aluracursos.apiForoHub.domain.usuario;
 
 import com.aluracursos.apiForoHub.domain.perfil.Perfil;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Table(name = "usuarios")
@@ -16,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Usuario {
+public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,9 +29,61 @@ public class Usuario {
     private String email;
     private String contrasenia;
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "usuario_perfiles",
+    @JoinTable(name = "usuarios_perfiles",
             joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "perfil_id")
     )
     private List<Perfil> perfiles = new ArrayList<>();
+
+    public Usuario(@Valid DatosRegistroUsuario datos, String contraseniaEncriptada) {
+        this.id = null;
+        this.nombre = datos.nombre();
+        this.email = datos.email();
+        this.contrasenia = contraseniaEncriptada;
+    }
+
+    public void actualizarDatos(DatosActualizacionUsuario datos){
+        if (datos.nombre() != null) {
+            this.nombre = datos.nombre();
+        }
+        if (datos.email() != null) {
+            this.email = datos.email();
+        }
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public String getPassword() {
+        return contrasenia;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
+

@@ -37,7 +37,26 @@ public class Topico {
     @OneToMany(mappedBy = "topico", cascade =  CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Respuesta> respuestas = new ArrayList<>();
 
-    public Topico(DatosRegistroTopico datos) {
+    public Topico(String titulo, String mensaje, Usuario autor, Curso curso) {
+        this.titulo = titulo;
+        this.mensaje = mensaje;
+        this.autor = autor;
+        this.curso = curso;
+        this.status = Status.NO_RESPONDIDO;
+        this.fechaCreacion = LocalDateTime.now();
+    }
 
+
+    public void actualizarDatos(DatosActualizacionTopico datos) {
+        if (datos.titulo() != null) {
+            this.titulo = datos.titulo();
+        }
+        if (datos.mensaje() != null) {
+            this.mensaje = datos.mensaje();
+        }
+    }
+
+    public void agregarRespuesta(Respuesta respuesta) {
+        this.respuestas.add(respuesta);
     }
 }
