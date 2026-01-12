@@ -15,7 +15,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/usuarios")
-@SecurityRequirement(name = "bearer-key")
 public class UsuarioController {
 
     @Autowired
@@ -37,12 +36,14 @@ public class UsuarioController {
     }
 
     @GetMapping
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity<Page<DatosRespuestaUsuario>> listarUsuarios(@PageableDefault Pageable paginacion) {
         return ResponseEntity.ok(usuarioRepository.findAll(paginacion).map(DatosRespuestaUsuario::new));
     }
 
     @Transactional
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity actualizarUsuario(@RequestBody @Valid DatosActualizacionUsuario datos, @PathVariable Long id) {
         var usuario = usuarioService.actualizarUsuario(id,datos);
 
@@ -50,6 +51,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity detallarUsuario(@PathVariable Long id) {
         var usuario =  usuarioService.detallarUsuario(id);
 
@@ -58,6 +60,7 @@ public class UsuarioController {
 
     @Transactional
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity eliminarUsuario(@PathVariable Long id) {
         usuarioService.eliminarUsuario(id);
 
